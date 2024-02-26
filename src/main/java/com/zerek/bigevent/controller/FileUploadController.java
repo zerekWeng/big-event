@@ -1,6 +1,7 @@
 package com.zerek.bigevent.controller;
 
 import com.zerek.bigevent.pojo.Result;
+import com.zerek.bigevent.utils.AliOssUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ public class FileUploadController {
         // store the file to localhost hard drive
         String originalFilename = file.getOriginalFilename();
         String filename = UUID.randomUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
-        file.transferTo(new File("C:\\Users\\zerek\\IdeaProjects\\big-event\\file\\" + filename));
-        return Result.success("url");
+        String url = AliOssUtil.uploadFile(filename, file.getInputStream());
+        return Result.success(url);
     }
 }

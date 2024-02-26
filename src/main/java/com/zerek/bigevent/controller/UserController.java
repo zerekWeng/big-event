@@ -10,12 +10,15 @@ import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Pattern;
 import org.apache.tomcat.util.http.parser.Authorization;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Validated
 @RestController
@@ -24,6 +27,8 @@ public class UserController {
 
     @Resource
     UserService userService;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("/register")
     public Result register(@Pattern(regexp = "^\\S{5,16}$") String username,
@@ -51,6 +56,8 @@ public class UserController {
             claims.put("id", loginUser.getId());
             claims.put("username", loginUser.getUsername());
             String token = JwtUtil.genToken(claims);
+            ValueOperations<String, String> operations = stringRedisTemplate.opsForValue();
+            operations.set(token, token, 1, TimeUnit.HOURS);
             return Result.success(token);
         }
         return Result.error("error password");
@@ -77,7 +84,7 @@ public class UserController {
     }
 
     @PatchMapping("/updatePwd")
-    public Result updatePwd(@RequestBody Map<String, String> params) {
+    public Result updatePwd(@RequestBody Map<String, String> params, @RequestHeader("Authorization") String token) {
         String oldPwd = params.get("old_pwd");
         String newPwd = params.get("new_pwd");
         String rePwd = params.get("re_pwd");
@@ -96,6 +103,8 @@ public class UserController {
             return Result.error("new password not consistent");
         }
         userService.updatePwd(newPwd);
+        ValueOperations<String, String> operations = stringRedisTemplate.opsForValue();
+        Boolean delete = operations.getOperations().delete(token);
         return Result.success();
     }
 }

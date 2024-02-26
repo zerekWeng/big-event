@@ -4,6 +4,7 @@ import com.zerek.bigevent.pojo.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -23,6 +24,9 @@ public interface ArticleMapper extends BaseMapper<Article> {
     List<Article> list(@Param("userId") Integer userId,
                        @Param("categoryId") Integer categoryId,
                        @Param("state") String state);
+
+    @Update("update article set title=#{title}, content=#{content}, cover_img=#{coverImg}, state=#{state}, category_id=#{categoryId} where id = #{id}")
+    void update(Article article);
 }
 
 

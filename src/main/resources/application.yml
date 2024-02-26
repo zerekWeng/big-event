@@ -4,7 +4,23 @@ spring:
     url: jdbc:mysql://localhost:3360/big_event
     username: root
     password: root
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      password:
+      timeout: 6000ms
+      jedis:
+        pool:
+          max-active: 1000
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 5
+
+
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
+
 

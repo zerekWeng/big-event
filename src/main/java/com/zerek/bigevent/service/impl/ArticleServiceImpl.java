@@ -53,6 +53,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         pageBean.setItems(page.getResult());
         return pageBean;
     }
+
+    @Override
+    public void update(Article article) {
+        article.setUpdateTime(LocalDateTime.now());
+        articleMapper.update(article);
+    }
 }
 
 

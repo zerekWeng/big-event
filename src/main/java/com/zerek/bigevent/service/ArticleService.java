@@ -14,4 +14,7 @@ public interface ArticleService extends IService<Article> {
     void add(Article article);
 
     PageBean<Article> list(Integer pageNum, Integer pageSize, Integer categoryId, String state);
+
+    void update(Article article);
+
 }
